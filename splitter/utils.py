@@ -1,7 +1,6 @@
 # -*- coding=utf8 -*-
 
 import re
-
 hanzi_re = re.compile(u"[\u4E00-\u9FD5]+", re.U)
 PHRASE_MAX_LENGTH = 6
 

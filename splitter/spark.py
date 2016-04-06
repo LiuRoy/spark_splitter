@@ -1,6 +1,7 @@
 # -*- coding=utf8 -*-
 from __future__ import division
 from math import log
+
 from pyspark import SparkContext, SparkConf
 from utils import str_decode, extract_hanzi, cut_sentence
 
@@ -21,6 +22,7 @@ class PhraseInfo(object):
 
     @staticmethod
     def calc_entropy(trim):
+        """计算熵"""
         if not trim:
             return float('-inf')
 
@@ -60,7 +62,7 @@ class SplitterEngine(object):
         self.final_result = {}
 
     def split(self):
-        """处理语料库"""
+        """spark处理"""
         raw_rdd = self.sc.textFile(self.corpus_path)
 
         utf_rdd = raw_rdd.map(lambda line: str_decode(line))
@@ -91,7 +93,7 @@ class SplitterEngine(object):
         self.phrase_dict_map = {key: PhraseInfo(val) for key, val in phrase_dict_map.iteritems()}
 
     def post_process(self):
-        """后续处理"""
+        """根据熵过滤"""
         for phrase, phrase_info in self.phrase_dict_map.iteritems():
             if len(phrase) < 3:
                 continue
@@ -128,8 +130,8 @@ class SplitterEngine(object):
 
 if __name__ == '__main__':
     spark_content = init_spark_context()
-    corpus_path = '/Users/ruoyuliu/Documents/MyCollection/SourceCode/github/spark_splitter/test/moyan.txt'
-    out_path = '/Users/ruoyuliu/Documents/MyCollection/SourceCode/github/spark_splitter/test/out.txt'
+    corpus_path = '../test/moyan.txt'
+    out_path = '../test/out.txt'
     engine = SplitterEngine(spark_content, corpus_path)
 
     engine.split()
